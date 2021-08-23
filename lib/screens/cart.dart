@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,87 +6,29 @@ import 'package:mangvaeye_user/directories/ImageDirectory.dart';
 import 'package:mangvaeye_user/utils/MyColors.dart';
 
 class Cart extends StatefulWidget {
-  const Cart({Key key}) : super(key: key);
+  final int productPrice, kilo, pao;
+  final String productId,
+      shopId,
+      productName,
+      location,
+      productImage,
+      productNote;
+
+  const Cart(
+      {Key key,
+      @required this.productPrice,
+      @required this.kilo,
+      @required this.pao,
+      @required this.productId,
+      @required this.productName,
+      @required this.location,
+      @required this.productImage,
+      @required this.productNote,
+      @required this.shopId})
+      : super(key: key);
 
   @override
   _CartState createState() => _CartState();
-}
-
-Future<void> showInformationDialog(BuildContext context) async {
-  return await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          content: Container(
-            height: MediaQuery.of(context).size.height * 0.40,
-            child: Stack(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Image.asset(
-                            ImageDirectory.imgDirectory + "cartgreenIcon.png",
-                            scale: 3,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Text(
-                              "Successfully",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              "added to cart",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Align(
-                    alignment: Alignment.bottomCenter * 0.9,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Check out now",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          primary: Colors.amber,
-                          onPrimary: Colors.black,
-                          minimumSize: Size(120, 50),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15))),
-                    ))
-              ],
-            ),
-          ),
-        );
-      });
 }
 
 class _CartState extends State<Cart> {
@@ -168,7 +111,7 @@ class _CartState extends State<Cart> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 35),
                                     child: Text(
-                                      "5/1234 korangi, dhobi \nghat",
+                                      widget.location,
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 13),
                                     ),
@@ -191,7 +134,7 @@ class _CartState extends State<Cart> {
                         height: 210,
                         child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: 10,
+                          itemCount: 1,
                           padding:
                               EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                           itemBuilder: (context, index) {
@@ -217,10 +160,26 @@ class _CartState extends State<Cart> {
                                             Column(
                                               mainAxisSize: MainAxisSize.max,
                                               children: [
-                                                Image.asset(
-                                                  ImageDirectory.imgDirectory +
-                                                      "carrot1.png",
-                                                  scale: 3,
+                                                ClipRRect(
+                                                  child: CachedNetworkImage(
+                                                    height: 100,
+                                                    width: 125,
+                                                    imageUrl: widget.productImage,
+                                                    progressIndicatorBuilder: (context,
+                                                        url,
+                                                        downloadProgress) =>
+                                                        Center(
+                                                            child: CircularProgressIndicator(
+                                                                value:
+                                                                downloadProgress
+                                                                    .progress)),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                        Icon(Icons.error),
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10)),
                                                 ),
                                               ],
                                             ),
@@ -234,20 +193,20 @@ class _CartState extends State<Cart> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "Fresh carrot",
+                                                    widget.productName,
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       color: Colors.black,
                                                     ),
                                                   ),
                                                   Text(
-                                                    "20 kg",
+                                                    "${widget.kilo} kg ${widget.pao} pao",
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.black),
                                                   ),
                                                   Text(
-                                                    "50 rupees",
+                                                    widget.productPrice.toString(),
                                                     style: TextStyle(
                                                         fontSize: 10,
                                                         color: Colors.black),
@@ -396,11 +355,16 @@ class _CartState extends State<Cart> {
                         child: SizedBox(
                           height: 50,
                           width: MediaQuery.of(context).size.width,
-                          child: ElevatedButton( style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(MyColors.WHITE),
-                          ),
-                            onPressed: () => showInformationDialog(context),
-                            child: Text("Place Your Order",style: TextStyle(color: MyColors.Black),),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(MyColors.WHITE),
+                            ),
+                            onPressed: () {},
+                            child: Text(
+                              "Place Your Order",
+                              style: TextStyle(color: MyColors.Black),
+                            ),
                           ),
                         ),
                       )

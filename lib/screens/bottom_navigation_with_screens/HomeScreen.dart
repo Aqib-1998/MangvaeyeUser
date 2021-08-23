@@ -206,11 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     errorWidget: (context, url, error) => Icon(Icons.error),
                                     fit: BoxFit.fitWidth,
                                   ),
-                                  // child: Image.asset(
-                                  //   ImageDirectory.imgDirectory + "veg.png",
-                                  //   width: MediaQuery.of(context).size.width,
-                                  //   fit: BoxFit.fitWidth,
-                                  // ),
+
                                 ),
                               ),
                               Padding(
@@ -276,38 +272,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void fetchCurrentLocation() async {
     Location.Location location = new Location.Location();
 
-    // print("1");
+
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
     LocationData _locationData;
-    // print("2");
-   // location.changeSettings(accuracy: LocationAccuracy.navigation);
 
-    // _serviceEnabled = await location.serviceEnabled();
-    // _permissionGranted = await location.hasPermission();
-    //
-    // if (_serviceEnabled && _permissionGranted == PermissionStatus.granted) {
-    //   _locationData = await location.getLocation();
-    //
-    //
-    //
-    //   _getAddress(_locationData.latitude!, _locationData.longitude!);
-    // } else {
-    //   if (_serviceEnabled) {
-    //     _permissionGranted = await location.requestPermission();
-    //   } else {
-    //     _serviceEnabled = await location.requestService();
-    //   }
-    //
-    //   if (_permissionGranted == PermissionStatus.granted && _serviceEnabled) {
-    //     _locationData = await location.getLocation();
-    //
-    //     _getAddress(_locationData.latitude!, _locationData.longitude!);
-    //   } else {
-    //     Fluttertoast.showToast(msg: "location is not available");
-    //   }
-    //
-    // }
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -326,63 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _locationData = await location.getLocation();
 
     _getAddress(_locationData.latitude, _locationData.longitude);
-    // print("lat "+ _locationData.latitude.toString());
-    // print("long "+ _locationData.longitude.toString());
 
-
-    // if (_serviceEnabled) {
-    //   if (_permissionGranted == PermissionStatus.granted) {
-    //     _locationData = await location.getLocation();
-    //
-    //     _getAddress(_locationData.latitude!, _locationData.longitude!);
-    //   } else {
-    //     _permissionGranted = await location.requestPermission();
-    //     if (_permissionGranted == PermissionStatus.granted) {
-    //       _locationData = await location.getLocation();
-    //       _locationData.accuracy!.abs();
-    //       _getAddress(_locationData.latitude!, _locationData.longitude!);
-    //     }
-    //   }
-    // } else {
-    //   _serviceEnabled = await location.requestService();
-    //   if (_serviceEnabled) {
-    //     if (_permissionGranted == PermissionStatus.granted) {
-    //       _locationData = await location.getLocation();
-    //
-    //       _getAddress(_locationData.latitude!, _locationData.longitude!);
-    //     } else {
-    //       _permissionGranted = await location.requestPermission();
-    //       if (_permissionGranted == PermissionStatus.granted) {
-    //         _locationData = await location.getLocation();
-    //
-    //         _getAddress(_locationData.latitude!, _locationData.longitude!);
-    //       }
-    //     }
-    //   }
-    // }
-    //
-    //   _permissionGranted = await location.hasPermission();
-    //   if (_permissionGranted == PermissionStatus.denied) {
-    //     _permissionGranted = await location.requestPermission();
-    //     if (_permissionGranted != PermissionStatus.granted) {
-    //       return;
-    //     }
-    //   }
-
-    // to get continious updated loc
-
-    // location.onLocationChanged.listen((LocationData currentLocation) {
-    //   setState(() {
-    //     address = placeMarks[0].name! +
-    //         " " +
-    //         placeMarks[0].subLocality! +
-    //         "," +
-    //         placeMarks[0].locality!;
-    //     print(address);
-    //   });
-    //   //  List<Placemark> placeMarks = await placemarkFromCoordinates(lat, lang);
-    //   //address = placeMarks.first.name! + "\n" + placeMarks.first.street! ;
-    // });
 
   }
 
@@ -402,17 +315,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     //writeGeoDateToFireStoreDb(lat,lang);
-    GeoFirePoint myLocation = geo.point(latitude: lat, longitude: lang);
+    // GeoFirePoint myLocation = geo.point(latitude: lat, longitude: lang);
+    //
+    // _fireStore
+    //     .collection('Shops')
+    //     .add({'name': 'random name', 'position': myLocation.data});
+    // queryDataToFireStoreDb(lat, lang);
 
-    _fireStore
-        .collection('Shops')
-        .add({'name': 'random name', 'position': myLocation.data});
-    queryDataToFireStoreDb(lat, lang);
-
-    //await List<Placemark> placemarks = await placemarkFromCoordinates(52.2165157, 6.9437819);
-    // List<Address> add =
-    // await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    // return add;
   }
 
   queryDataToFireStoreDb(double lat,double long){

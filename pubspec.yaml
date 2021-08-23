@@ -41,6 +41,7 @@ dependencies:
   firebase_storage: "^10.0.1"
   flutter_custom_dialog: ^1.0.20
   location: ^4.3.0
+  geolocator: ^7.4.0
   geocoding: ^2.0.0
   geoflutterfire: ^3.0.1
   google_sign_in: ^5.0.0
