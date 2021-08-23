@@ -81,12 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.29,
-                  child: Expanded(
-                    child: Image.asset(
-                      ImageDirectory.imgDirectory + "topBg.png",
-                      height: MediaQuery.of(context).size.height,
-                      fit: BoxFit.fitHeight,
-                    ),
+                  child: Image.asset(
+                    ImageDirectory.imgDirectory + "topBg.png",
+                    height: MediaQuery.of(context).size.height,
+                    fit: BoxFit.fitHeight,
                   ),
                 ),
                 Padding(
@@ -173,7 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Center(child: CircularProgressIndicator(color:  MyColors.APP_COLOR,),);
                   }
                   snapshot.data.docs.forEach((res){
-
                     print(res.id); // printing document id of Shop Users
                   });
                   return ListView.builder(
@@ -197,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.only(
                                     bottom: 0.0, top: 0.0, left: 20.0, right: 20),
                                 child: Container(
+                                  height: MediaQuery.of(context).size.height/5,
                                   clipBehavior: Clip.antiAlias,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15)),
@@ -206,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     progressIndicatorBuilder: (context, url, downloadProgress) =>
                                         Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
                                     errorWidget: (context, url, error) => Icon(Icons.error),
+                                    fit: BoxFit.fitWidth,
                                   ),
                                   // child: Image.asset(
                                   //   ImageDirectory.imgDirectory + "veg.png",

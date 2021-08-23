@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mangvaeye_user/directories/ImageDirectory.dart';
 
 class ShopMenu extends StatefulWidget {
@@ -14,17 +15,16 @@ class ShopMenu extends StatefulWidget {
 
 class _ShopMenuState extends State<ShopMenu> {
   get builder => null;
+  int kg=1,pao=0;
 
-  _showModalBottomSheet(context) {
+  _showModalBottomSheet(context,String productName) {
     showModalBottomSheet(
-
       backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return ListView(
             children: [
               Container(
-
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -39,7 +39,7 @@ class _ShopMenuState extends State<ShopMenu> {
                       Row(
                         children: [
                           Text(
-                            "Fresh Carrot",
+                           productName,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -85,45 +85,93 @@ class _ShopMenuState extends State<ShopMenu> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Text(
-                        "Select Current Location / Address",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
+                      InkWell(
+                        onTap: (){},
+                        child: Text(
+                          "Select Current Location / Address",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
                       ),
                       Padding(padding: EdgeInsets.only(top: 10)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            ImageDirectory.imgDirectory+"plusIcon.png",
-                            scale: 3,
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                kg++;
+                              });
+
+                            },
+                            child: Image.asset(
+                              ImageDirectory.imgDirectory+"plusIcon.png",
+                              scale: 3,
+                            ),
                           ),
                           Padding(
                             padding:
                             const EdgeInsets.only(right: 13.5, left: 13.5),
-                            child: Text("0 Kg"),
+                            child: Text("$kg Kg"),
                           ),
-                          Image.asset(
-                            ImageDirectory.imgDirectory+"minusIcon.png",
-                            scale: 3,
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                if(kg>0){
+                                  kg--;
+                                }else{
+                                  Fluttertoast.showToast(msg: "Cannot go below 0");
+                                }
+
+                              });
+
+                            },
+                            child: Image.asset(
+                              ImageDirectory.imgDirectory+"minusIcon.png",
+                              scale: 3,
+                            ),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            ImageDirectory.imgDirectory+"plusIcon.png",
-                            scale: 3,
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                if(pao<4){
+                                pao++;
+                                }else{
+                                  Fluttertoast.showToast(msg: "Limit exceeded");
+                                }
+                              });
+
+                            },
+                            child: Image.asset(
+                              ImageDirectory.imgDirectory+"plusIcon.png",
+                              scale: 3,
+                            ),
                           ),
                           Padding(
                             padding:
                             const EdgeInsets.only(right: 13.5, left: 13.5),
-                            child: Text("0 Kg"),
+                            child: Text("$pao Pao"),
                           ),
-                          Image.asset(
-                            ImageDirectory.imgDirectory+"minusIcon.png",
-                            scale: 3,
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                if(pao>0){
+                                pao--;
+                                }else{
+                                  Fluttertoast.showToast(msg: "Cannot go below 0");
+                                }
+                              });
+
+                            },
+                            child: Image.asset(
+                              ImageDirectory.imgDirectory+"minusIcon.png",
+                              scale: 3,
+                            ),
                           ),
                         ],
                       ),
@@ -199,190 +247,197 @@ class _ShopMenuState extends State<ShopMenu> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: widget.shopPhoto,fit: BoxFit.fitWidth,
-                      progressIndicatorBuilder: (context, url, downloadProgress) =>
-                          Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 40, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          InkWell(
-                            onTap: () => Navigator.pop(context),
-                            child: Image.asset(
-                              ImageDirectory.imgDirectory+"backIcon.png",
-                              scale: 3.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                Padding(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          body: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
                     children: [
-                      Text(
-                        widget.shopName,
-                        style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "See Reviews (200)",
-                        style: TextStyle(
-                            color: Colors.black45, fontWeight: FontWeight.bold),
+                      CachedNetworkImage(
+                        imageUrl: widget.shopPhoto,fit: BoxFit.fitWidth,
+                        progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 0),
+                            vertical: 40, horizontal: 20),
                         child: Row(
-                          children: [
-                            Image.asset(
-                              ImageDirectory.imgDirectory+"star.png",
-                              scale: 2.3,
-                            ),
-                            Text(
-                              "4.6",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 35),
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            InkWell(
+                              onTap: () => Navigator.pop(context),
                               child: Image.asset(
-                                ImageDirectory.imgDirectory+"clock.png",
-                                scale: 2.4,
+                                ImageDirectory.imgDirectory+"backIcon.png",
+                                scale: 3.5,
                               ),
-                            ),
-                            Text(
-                              "15 min",
-                              style: TextStyle(color: Colors.black45),
                             ),
                           ],
                         ),
-                      ),
-                      Text(
-                        "Kami store is the place where you can get fresh vegetable",
-                        style: TextStyle(color: Colors.black45),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 5),
-                        child: Text("${widget.shopName} Menu",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height* 0.6,
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection("Shop Users").doc(widget.shopID).collection('Shop Menus').snapshots(),
-                            builder: (context, snapshot) {
-                            if(!snapshot.hasData || snapshot.data.docs.length == 0){
-                              return Center(child: Text("This shop has no Menus!"),);
-                            }
-                            if(snapshot.connectionState == ConnectionState.waiting){
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.docs.length,
-                              padding:
-                              EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                              itemBuilder: (context, index) {
-                                return Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.black12),
-                                        color: Colors.white,
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(10),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.shopName,
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "See Reviews (200)",
+                          style: TextStyle(
+                              color: Colors.black45, fontWeight: FontWeight.bold),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 0),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                ImageDirectory.imgDirectory+"star.png",
+                                scale: 2.3,
+                              ),
+                              Text(
+                                "4.6",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 35),
+                                child: Image.asset(
+                                  ImageDirectory.imgDirectory+"clock.png",
+                                  scale: 2.4,
+                                ),
+                              ),
+                              Text(
+                                "15 min",
+                                style: TextStyle(color: Colors.black45),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          "Kami store is the place where you can get fresh vegetable",
+                          style: TextStyle(color: Colors.black45),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 5),
+                          child: Text("${widget.shopName} Menu",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height* 0.6,
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance.collection("Shop Users").doc(widget.shopID).collection('Shop Menus').snapshots(),
+                              builder: (context, snapshot) {
+                              if(!snapshot.hasData || snapshot.data.docs.length == 0){
+                                return Center(child: Text("This shop has no Menus!"),);
+                              }
+                              if(snapshot.connectionState == ConnectionState.waiting){
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: snapshot.data.docs.length,
+                                padding:
+                                EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1, color: Colors.black12),
+                                          color: Colors.white,
+                                          borderRadius: const BorderRadius.all(
+                                            const Radius.circular(10),
+                                          ),
                                         ),
-                                      ),
-                                      child: InkWell(
-                                        onTap: () {
-                                          _showModalBottomSheet(context);
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                CachedNetworkImage(
+                                        child: InkWell(
+                                          onTap: () {
+                                            _showModalBottomSheet(context,snapshot.data.docs[index]["Menu Name"]);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              ClipRRect(
+                                                child: CachedNetworkImage(
                                                   height: 100,
-                                                  width: 100,
+                                                  width: 125,
                                                   imageUrl: snapshot.data.docs[index]["Menu Image"],
                                                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                                                       Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
                                                   errorWidget: (context, url, error) => Icon(Icons.error),
+                                                  fit: BoxFit.fill,
                                                 ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 0, horizontal: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    snapshot.data.docs[index]["Menu Name"],
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.black45,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    "${snapshot.data.docs[index]["Menu Amount"]} rupees kilo",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black45),
-                                                  ),
-                                                  Text(
-                                                    "Click to order",
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.black45),
-                                                  ),
-                                                ],
+                                                borderRadius: BorderRadius.all(Radius.circular(10)),
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 0, horizontal: 10),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      snapshot.data.docs[index]["Menu Name"],
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.black45,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${snapshot.data.docs[index]["Menu Amount"]} rupees kilo",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black45),
+                                                    ),
+                                                    Text(
+                                                      "Click to order",
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: Colors.black45),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                          }
+                                      SizedBox(
+                                        height: 15,
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              )
             ),
           ),
         ),
-      ),
     );
+
+  }
+  @override
+  void initState() {
+    kg= 1;
+    pao= 0;
+    super.initState();
   }
 }
