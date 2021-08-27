@@ -4,6 +4,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mangvaeye_user/screens/Login.dart';
 import 'package:mangvaeye_user/screens/bottom_navigation_with_screens/HomeScreen.dart';
@@ -55,7 +56,18 @@ class CheckUser extends StatefulWidget {
 }
 
 class _CheckUserState extends State<CheckUser> {
+  FirebaseMessaging messaging;
+  @override
+  void initState() {
 
+    messaging = FirebaseMessaging.instance;
+    print(messaging.getToken());
+    super.initState();
+
+
+
+
+  }
 
   @override
   Widget build(BuildContext context) {

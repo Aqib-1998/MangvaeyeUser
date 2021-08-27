@@ -1,5 +1,6 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -31,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Location.Location location = new Location.Location();
    final geo = Geoflutterfire();
    final _fireStore = FirebaseFirestore.instance;
+   double lat,long;
+  String name = FirebaseAuth.instance.currentUser.displayName;
 
    void init(){
      //_fireStore = FirebaseFirestore.instance;
@@ -42,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // super.initState();
     print("init called");
+
     fetchCurrentLocation();
   }
   var ref = FirebaseFirestore.instance.collection("Shop Users");
@@ -60,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // fetchCurrentLocation();
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -183,7 +188,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           shopID: snapshot.data.docs[index].id,
                           shopName: snapshot.data.docs[index]["Shop Name"],
                           shopPhoto: snapshot.data.docs[index]["Shop Image"],
-                        )),
+                          currentLocation: address,
+                          lat: lat,
+                          long: long,
+                          userName: name,
+
+
+                        )
+                        ),
                         child: Container(
                           margin: EdgeInsets.only(bottom: 20),
                           child: Column(
@@ -275,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
-    LocationData _locationData;
+    LocationData locationData;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -292,9 +304,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
     }
-    _locationData = await location.getLocation();
+    locationData = await location.getLocation();
+    lat =  locationData.latitude;
+    long = locationData.longitude;
 
-    _getAddress(_locationData.latitude, _locationData.longitude);
+    _getAddress(locationData.latitude, locationData.longitude);
 
 
   }

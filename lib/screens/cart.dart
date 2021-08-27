@@ -1,18 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mangvaeye_user/directories/ImageDirectory.dart';
+import 'package:mangvaeye_user/main.dart';
 import 'package:mangvaeye_user/utils/MyColors.dart';
 
+
+
 class Cart extends StatefulWidget {
-  final int productPrice, kilo, pao;
-  final String productId,
-      shopId,
-      productName,
-      location,
-      productImage,
-      productNote;
+  final List<int> productPrice, kilo, pao;
+  final String shopId, location,userName;
+  final double lat, long;
+  final List<String> productId,productName,productImage,productNote;
 
   const Cart(
       {Key key,
@@ -24,7 +25,7 @@ class Cart extends StatefulWidget {
       @required this.location,
       @required this.productImage,
       @required this.productNote,
-      @required this.shopId})
+      @required this.shopId,@required this.userName,@required this.lat,@required this.long})
       : super(key: key);
 
   @override
@@ -32,10 +33,23 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
+
+  @override
+  void initState() {
+    tempSum = 0;
+    super.initState();
+  }
+
   get child => null;
+  double tempSum = 0,sum = 0;
 
   @override
   Widget build(BuildContext context) {
+    for(int i = 0;i< widget.productName.length;i++){
+      tempSum = tempSum + (widget.productPrice[i] * widget.kilo[i])+((widget.productPrice[i]/4) * widget.pao[i]);
+    }
+    sum = tempSum;
+    tempSum = 0;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -134,7 +148,7 @@ class _CartState extends State<Cart> {
                         height: 210,
                         child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: 1,
+                          itemCount: widget.productName.length,
                           padding:
                               EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                           itemBuilder: (context, index) {
@@ -164,7 +178,7 @@ class _CartState extends State<Cart> {
                                                   child: CachedNetworkImage(
                                                     height: 100,
                                                     width: 125,
-                                                    imageUrl: widget.productImage,
+                                                    imageUrl: widget.productImage[index],
                                                     progressIndicatorBuilder: (context,
                                                         url,
                                                         downloadProgress) =>
@@ -193,20 +207,20 @@ class _CartState extends State<Cart> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    widget.productName,
+                                                    widget.productName[index],
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       color: Colors.black,
                                                     ),
                                                   ),
                                                   Text(
-                                                    "${widget.kilo} kg ${widget.pao} pao",
+                                                    "${widget.kilo[index]} kg ${widget.pao[index]} pao",
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.black),
                                                   ),
                                                   Text(
-                                                    widget.productPrice.toString(),
+                                                   "${widget.productPrice[index].toString()} Rs/kilo",
                                                     style: TextStyle(
                                                         fontSize: 10,
                                                         color: Colors.black),
@@ -298,7 +312,7 @@ class _CartState extends State<Cart> {
                             style: TextStyle(color: Color(0xff373737)),
                           ),
                           Text(
-                            "\$20.49",
+                            "$sum Rs",
                             style: TextStyle(color: Color(0xff373737)),
                           ),
                         ],
@@ -360,7 +374,28 @@ class _CartState extends State<Cart> {
                               backgroundColor:
                                   MaterialStateProperty.all(MyColors.WHITE),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              print(widget.userName);
+                              FirebaseFirestore.instance.collection('Shop Users').doc(widget.shopId).collection('Queued Orders').add({
+                                'Customer Name': widget.userName,
+                                'location':widget.location,
+                                'Product Name': widget.productName,
+                                'Product Note': widget.productNote,
+                                'Product Price': widget.productPrice,
+                                'kg': widget.kilo,
+                                'pao' : widget.pao,
+                                'Total Price': sum,
+                                'TimeStamp' : DateTime.now(),
+                                'lat' : widget.lat,
+                                'long': widget.long
+                              }).whenComplete((){
+
+
+                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> MyApp()), (route) => false);
+                              });
+
+
+                            },
                             child: Text(
                               "Place Your Order",
                               style: TextStyle(color: MyColors.Black),
@@ -377,5 +412,7 @@ class _CartState extends State<Cart> {
         ),
       ),
     );
+
   }
+
 }

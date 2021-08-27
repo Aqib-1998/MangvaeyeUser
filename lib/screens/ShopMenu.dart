@@ -10,13 +10,14 @@ import 'package:mangvaeye_user/directories/ImageDirectory.dart';
 import 'package:mangvaeye_user/screens/cart.dart';
 
 class ShopMenu extends StatefulWidget {
-  final String shopID, shopName, shopPhoto;
+  final String shopID, shopName, shopPhoto,currentLocation,userName;
+  final double lat,long;
 
   const ShopMenu(
       {Key key,
-      @required this.shopID,
-      @required this.shopName,
-      @required this.shopPhoto})
+        @required this.shopID,
+        @required this.shopName,
+        @required this.shopPhoto,@required this.currentLocation,@required this.userName,@required this.lat,@required this.long})
       : super(key: key);
 
   @override
@@ -24,9 +25,13 @@ class ShopMenu extends StatefulWidget {
 }
 
 final noteController = TextEditingController();
+bool cart = false;
 
+int length=0;
 class _ShopMenuState extends State<ShopMenu> {
   int kg = 1, pao = 0;
+  List<String>  productNameList=[], productIdList=[], productImageList=[], productNoteList=[];
+  List<int> productPriceList=[],weightKg = [],weightPao = [];
   OutlineInputBorder outlineBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(color: Colors.transparent));
@@ -107,7 +112,7 @@ class _ShopMenuState extends State<ShopMenu> {
                           ),
                           InkWell(
                             onTap: () {
-                              fetchCurrentLocation();
+                              //fetchCurrentLocation();
                             },
                             child: Text(
                               "Select Current Location / Address",
@@ -224,32 +229,47 @@ class _ShopMenuState extends State<ShopMenu> {
                             padding: const EdgeInsets.only(top: 10),
                             child: InkWell(
                               onTap: () {
-                                if (kg > 0 && _currentAddress != null) {
-                                  print(_currentAddress);
+                                if (kg > 0 && widget.currentLocation != null) {
+                                  print(widget.currentLocation);
                                   Navigator.pop(context);
+
+                                  productNameList.add(productName);
+                                  productIdList.add(productId);
+                                  productPriceList.add(productPrice);
+                                  productImageList.add(productImage);
+                                  productNoteList.add(noteController.text);
+                                  weightKg.add(kg);
+                                  weightPao.add(pao);
+                                  setState(() {
+                                    cart = true;
+                                    noteController.clear();
+                                    kg = 1;
+                                    pao = 0;
+                                  });
                                   showInformationDialog(
                                       context,
                                       shopId,
-                                      productName,
-                                      productId,
-                                      productPrice,
-                                      productImage,
-                                      productNote,
+                                      productNameList,
+                                      productIdList,
+                                      productPriceList,
+                                      productImageList,
+                                      productNoteList,
                                       location);
+
                                 } else {
                                   if (kg == 0 && pao == 0) {
                                     Fluttertoast.showToast(
                                         msg: "Please select a Quantity");
                                   }
-                                  if (_currentAddress.isNotEmpty) {
-                                    Fluttertoast.showToast(
-                                        msg: "Please give address information");
-                                  }
+                                  // if (widget.currentLocation.isNotEmpty) {
+                                  //   Fluttertoast.showToast(
+                                  //       msg: "Please give address information");
+                                  // }
                                 }
                               },
                               child: Container(
                                 height:
-                                    MediaQuery.of(context).size.height * 0.07,
+                                MediaQuery.of(context).size.height * 0.07,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(
                                     const Radius.circular(8),
@@ -261,7 +281,7 @@ class _ShopMenuState extends State<ShopMenu> {
                                   children: [
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           "Add To Basket",
@@ -291,11 +311,11 @@ class _ShopMenuState extends State<ShopMenu> {
   Future<void> showInformationDialog(
       BuildContext context,
       String shopId,
-      String productName,
-      String productId,
-      int productPrice,
-      String productImage,
-      String productNote,
+      List<String> productName,
+      List<String> productId,
+      List<int> productPrice,
+      List<String> productImage,
+      List<String> productNote,
       String location) async {
     return await showDialog(
         context: context,
@@ -355,20 +375,27 @@ class _ShopMenuState extends State<ShopMenu> {
                       child: ElevatedButton(
                         onPressed: () {
                           print(location);
+                          noteController.clear();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Cart(
-                                        productName: productName,
-                                        shopId: shopId,
-                                        productPrice: productPrice,
-                                        location: location,
-                                        productId: productId,
-                                        productImage: productImage,
-                                        kilo: kg,
-                                        pao: pao,
+                                    productName: productName,
+                                    shopId: shopId,
+                                    productPrice: productPrice,
+                                    location: location,
+                                    productId: productId,
+                                    productImage: productImage,
+                                    kilo: weightKg,
+                                    pao: weightPao,
                                     productNote: productNote,
-                                      )));
+                                    userName: widget.userName,
+                                    lat: widget.lat,
+                                    long: widget.long,
+                                  ))).whenComplete(() {
+                                    kg = 1;
+                                    pao = 0;
+                          });
                         },
                         child: Text(
                           "Check out now",
@@ -381,7 +408,23 @@ class _ShopMenuState extends State<ShopMenu> {
                             minimumSize: Size(120, 50),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                      ))
+                      )),
+                  Align(
+                      alignment: Alignment.topCenter * 0.9,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          print(location);
+                          noteController.clear();
+                          kg= 1;
+                          pao = 0;
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "X",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      )),
                 ],
               ),
             ),
@@ -397,220 +440,228 @@ class _ShopMenuState extends State<ShopMenu> {
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(
               child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: widget.shopPhoto,
-                    fit: BoxFit.fitWidth,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) => Center(
+                  Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: widget.shopPhoto,
+                        fit: BoxFit.fitWidth,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) => Center(
                             child: CircularProgressIndicator(
                                 value: downloadProgress.progress)),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 40, horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            InkWell(
+                              onTap: () => Navigator.pop(context),
+                              child: Image.asset(
+                                ImageDirectory.imgDirectory + "backIcon.png",
+                                scale: 3.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 40, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: Image.asset(
-                            ImageDirectory.imgDirectory + "backIcon.png",
-                            scale: 3.5,
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.shopName,
+                          style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "See Reviews (200)",
+                          style: TextStyle(
+                              color: Colors.black45, fontWeight: FontWeight.bold),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 0),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                ImageDirectory.imgDirectory + "star.png",
+                                scale: 2.3,
+                              ),
+                              Text(
+                                "4.6",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 35),
+                                child: Image.asset(
+                                  ImageDirectory.imgDirectory + "clock.png",
+                                  scale: 2.4,
+                                ),
+                              ),
+                              Text(
+                                "15 min",
+                                style: TextStyle(color: Colors.black45),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.shopName,
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "See Reviews (200)",
-                      style: TextStyle(
-                          color: Colors.black45, fontWeight: FontWeight.bold),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 0),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            ImageDirectory.imgDirectory + "star.png",
-                            scale: 2.3,
-                          ),
-                          Text(
-                            "4.6",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 35),
-                            child: Image.asset(
-                              ImageDirectory.imgDirectory + "clock.png",
-                              scale: 2.4,
-                            ),
-                          ),
-                          Text(
-                            "15 min",
-                            style: TextStyle(color: Colors.black45),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      "Kami store is the place where you can get fresh vegetable",
-                      style: TextStyle(color: Colors.black45),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 5),
-                      child: Text("${widget.shopName} Menu",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.6,
-                      child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection("Shop Users")
-                              .doc(widget.shopID)
-                              .collection('Shop Menus')
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData ||
-                                snapshot.data.docs.length == 0) {
-                              return Center(
-                                child: Text("This shop has no Menus!"),
-                              );
-                            }
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.docs.length,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              itemBuilder: (context, index) {
-                                String menuName =
+                        Text(
+                          "Kami store is the place where you can get fresh vegetable",
+                          style: TextStyle(color: Colors.black45),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 5),
+                          child: Text("${widget.shopName} Menu",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection("Shop Users")
+                                  .doc(widget.shopID)
+                                  .collection('Shop Menus')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data.docs.length == 0) {
+                                  return Center(
+                                    child: Text("This shop has no Menus!"),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.docs.length,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 0),
+                                  itemBuilder: (context, index) {
+                                    String menuName =
                                     snapshot.data.docs[index]["Menu Name"];
-                                String menuId = snapshot.data.docs[index].id;
-                                int menuPrice = int.parse(
-                                    snapshot.data.docs[index]["Menu Amount"]);
-                                String menuImage =
+                                    String menuId = snapshot.data.docs[index].id;
+                                    int menuPrice = int.parse(
+                                        snapshot.data.docs[index]["Menu Amount"]);
+                                    String menuImage =
                                     snapshot.data.docs[index]["Menu Image"];
-                                return Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.black12),
-                                        color: Colors.white,
-                                        borderRadius: const BorderRadius.all(
-                                          const Radius.circular(10),
-                                        ),
-                                      ),
-                                      child: InkWell(
-                                        onTap: () {
-                                          _showModalBottomSheet(
-                                              context,
-                                              widget.shopID,
-                                              menuName,
-                                              menuId,
-                                              menuPrice,
-                                              menuImage,
-                                              noteController.text,
-                                              _currentAddress);
-                                        },
-                                        child: Row(
-                                          children: [
-                                            ClipRRect(
-                                              child: CachedNetworkImage(
-                                                height: 100,
-                                                width: 125,
-                                                imageUrl: menuImage,
-                                                progressIndicatorBuilder: (context,
+                                    return Column(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1, color: Colors.black12),
+                                            color: Colors.white,
+                                            borderRadius: const BorderRadius.all(
+                                              const Radius.circular(10),
+                                            ),
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              _showModalBottomSheet(
+                                                  context,
+                                                  widget.shopID,
+                                                  menuName,
+                                                  menuId,
+                                                  menuPrice,
+                                                  menuImage,
+                                                  noteController.text,
+                                                  widget.currentLocation);
+                                            },
+                                            child: Row(
+                                              children: [
+                                                ClipRRect(
+                                                  child: CachedNetworkImage(
+                                                    height: 100,
+                                                    width: 125,
+                                                    imageUrl: menuImage,
+                                                    progressIndicatorBuilder: (context,
                                                         url,
                                                         downloadProgress) =>
-                                                    Center(
-                                                        child: CircularProgressIndicator(
-                                                            value:
+                                                        Center(
+                                                            child: CircularProgressIndicator(
+                                                                value:
                                                                 downloadProgress
                                                                     .progress)),
-                                                errorWidget:
-                                                    (context, url, error) =>
+                                                    errorWidget:
+                                                        (context, url, error) =>
                                                         Icon(Icons.error),
-                                                fit: BoxFit.fill,
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                            ),
-                                            Padding(
-                                              padding:
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10)),
+                                                ),
+                                                Padding(
+                                                  padding:
                                                   const EdgeInsets.symmetric(
                                                       vertical: 0,
                                                       horizontal: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
+                                                  child: Column(
+                                                    crossAxisAlignment:
                                                     CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    menuName,
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.black45,
-                                                    ),
+                                                    children: [
+                                                      Text(
+                                                        menuName,
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors.black45,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "$menuPrice Rs/kilo",
+                                                        style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.black45),
+                                                      ),
+                                                      Text(
+                                                        "Click to order",
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: Colors.black45),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    "$menuPrice Rs/kilo",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black45),
-                                                  ),
-                                                  Text(
-                                                    "Click to order",
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.black45),
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    )
-                                  ],
+                                        SizedBox(
+                                          height: 15,
+                                        )
+                                      ],
+                                    );
+                                  },
                                 );
-                              },
-                            );
-                          }),
+                              }),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ],
-          )),
+                  ),
+                ],
+              )),
         ),
+        floatingActionButton: cart?FloatingActionButton(
+          child: Text(productNameList.length.toString()),
+          onPressed: (){
+            print(productNameList);
+
+
+          },
+        ):null,
       ),
     );
   }
@@ -619,32 +670,40 @@ class _ShopMenuState extends State<ShopMenu> {
   void initState() {
     kg = 1;
     pao = 0;
+    cart= false;
+    noteController.clear();
+    productNameList.clear();
+    productNoteList.clear();
+    productPriceList.clear();
+    productIdList.clear();
+    productImageList.clear();
+
     super.initState();
   }
 
-  var locationMessage = "";
-  String _currentAddress = "";
-  final geo = Geoflutterfire();
-  GeoFirePoint myLocation;
-
-  Future fetchCurrentLocation() async {
-    var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    var longitude = position.longitude, latitude = position.latitude;
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(latitude, longitude);
-    Placemark place = placemarks[0];
-
-    setState(() {
-      locationMessage = "$latitude , $longitude";
-      _currentAddress =
-          "${place.street}, ${place.locality},${place.administrativeArea}, ${place.country}";
-      myLocation = geo.point(
-        latitude: latitude,
-        longitude: longitude,
-      );
-      print(locationMessage);
-      print(_currentAddress);
-    });
-  }
+  // var locationMessage = "";
+  // String _currentAddress = "";
+  // final geo = Geoflutterfire();
+  // GeoFirePoint myLocation;
+  //
+  // Future fetchCurrentLocation() async {
+  //   var position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high);
+  //   var longitude = position.longitude, latitude = position.latitude;
+  //   List<Placemark> placemarks =
+  //   await placemarkFromCoordinates(latitude, longitude);
+  //   Placemark place = placemarks[0];
+  //
+  //   setState(() {
+  //     locationMessage = "$latitude , $longitude";
+  //     _currentAddress =
+  //     "${place.street}, ${place.locality},${place.administrativeArea}, ${place.country}";
+  //     myLocation = geo.point(
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //     );
+  //     print(locationMessage);
+  //     print(_currentAddress);
+  //   });
+  // }
 }

@@ -51,6 +51,7 @@ dependencies:
   animated_splash_screen: ^1.1.0
   page_transition: any
   cached_network_image: ^3.1.0
+  firebase_messaging: ^10.0.6
 
 
 
