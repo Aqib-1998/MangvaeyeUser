@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mangvaeye_user/screens/Login.dart';
+import 'package:mangvaeye_user/screens/bottom_navigation_with_screens/BottomNavScreen.dart';
 import 'package:mangvaeye_user/screens/bottom_navigation_with_screens/HomeScreen.dart';
 import 'package:mangvaeye_user/utils/auth.dart';
 import 'package:mangvaeye_user/utils/auth_bloc.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
             duration: 3,
             splash: "assets/images/logo.png",
             nextScreen: CheckUser(auth: Auth(),),
-            splashIconSize: 75.0,
+            splashIconSize: 60.0,
             animationDuration: Duration(seconds: 1),
             pageTransitionType: PageTransitionType.leftToRightWithFade,
             splashTransition: SplashTransition.slideTransition,
@@ -104,7 +105,8 @@ class _CheckUserState extends State<CheckUser> {
 
           }
 
-          return HomeScreen(auth: widget.auth,uid: uid,);
+         return BottomNavScreen(auth: widget.auth,uid: uid,);
+
         }else{
           return Scaffold(
             body: Center(

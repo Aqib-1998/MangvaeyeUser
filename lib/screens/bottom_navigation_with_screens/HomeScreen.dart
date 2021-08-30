@@ -8,6 +8,7 @@ import 'package:location/location.dart';
 import 'package:mangvaeye_user/directories/ImageDirectory.dart';
 import 'package:mangvaeye_user/main.dart';
 import 'package:mangvaeye_user/screens/ShopMenu.dart';
+import 'package:mangvaeye_user/screens/bottom_navigation_with_screens/BottomNavScreen.dart';
 import 'package:mangvaeye_user/utils/MyColors.dart';
 import 'package:mangvaeye_user/utils/auth.dart';
 import 'package:mangvaeye_user/widget/search_widget.dart';
@@ -92,68 +93,77 @@ class _HomeScreenState extends State<HomeScreen> {
                     fit: BoxFit.fitHeight,
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 10, left: 10),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 0.0, vertical: 10),
-                      child: searchbar(),
+
+                Column(children: [
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 10, left: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0.0, vertical: 10),
+                        child: searchbar(),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 0.0, vertical: 0.0),
-                        child: Image.asset(
-                          ImageDirectory.imgDirectory + "loc.png",
-                          scale: 2.70,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              "Your Address:",
-                              style: TextStyle(fontSize: 13),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 0.0, vertical: 0.0),
+                              child: Image.asset(
+                                ImageDirectory.imgDirectory + "loc.png",
+                                scale: 2.70,
+                              ),
                             ),
-                            Text("$address", style: TextStyle(fontSize: 11)),
+                            Padding(
+                              padding: EdgeInsets.only(left: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Your Address:",
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                  Text("$address", style: TextStyle(fontSize: 11)),
+                                ],
+                              ),
+                            ),
+
                           ],
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: InkWell(
 
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: InkWell(
-
-                      onTap: () {
-                        // print("clicked");
-                        fetchCurrentLocation();
-                      },
-                      child: Image.asset(
-                        ImageDirectory.imgDirectory + "reload.png",
-                        scale: 20,
-                      ),
+                            onTap: () {
+                              // print("clicked");
+                              fetchCurrentLocation();
+                            },
+                            child: Image.asset(
+                              ImageDirectory.imgDirectory + "reload.png",
+                              scale: 20,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+
+                ],),
+
+
+              ],
             ),
+
             Center(child: TextButton(onPressed: _signOut, child: Text("Signout",style: TextStyle(color: Colors.red),))),
             Padding(
               padding: const EdgeInsets.only(
@@ -175,9 +185,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   if(snapshot.connectionState == ConnectionState.waiting){
                     return Center(child: CircularProgressIndicator(color:  MyColors.APP_COLOR,),);
                   }
-                  snapshot.data.docs.forEach((res){
-                    print(res.id); // printing document id of Shop Users
-                  });
+                  // snapshot.data.docs.forEach((res){
+                  //   print(res.id); // printing document id of Shop Users
+                  // });
                   return ListView.builder(
                     shrinkWrap: true,
                     itemCount: snapshot.data.docs.length,
@@ -196,66 +206,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         )
                         ),
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 0.0, top: 0.0, left: 20.0, right: 20),
-                                child: Container(
-                                  height: MediaQuery.of(context).size.height/5,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15)),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: CachedNetworkImage(
-                                    imageUrl: snapshot.data.docs[index]["Shop Image"],
-                                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                        Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                        child: Padding(
+                         padding: EdgeInsets.only(left: 10,right: 10),
+                          child: Container(
 
+                            decoration: BoxDecoration(color: MyColors.LIGHT_GREY1,
+                                borderRadius: BorderRadius.circular(15)
+                            ),
+
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 0.0, top: 0.0, left: 20.0, right: 20),
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height/5,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15)),
+                                    width: MediaQuery.of(context).size.width,
+                                    child: CachedNetworkImage(
+                                      imageUrl: snapshot.data.docs[index]["Shop Image"],
+                                      progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                          Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                                      errorWidget: (context, url, error) => Icon(Icons.error),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                  snapshot.data.docs[index]["Shop Name"],
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    snapshot.data.docs[index]["Shop Name"],
+                                    style: TextStyle(
+                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  "Estimate Delivery: 15 mint",
                                   style: TextStyle(
-                                      fontSize: 20, fontWeight: FontWeight.bold),
+                                      fontSize: 10, fontWeight: FontWeight.normal),
                                 ),
-                              ),
-                              Text(
-                                "Estimate Delivery: 15 mint",
-                                style: TextStyle(
-                                    fontSize: 10, fontWeight: FontWeight.normal),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    ImageDirectory.imgDirectory + "star.png",
-                                    scale: 3,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      ImageDirectory.imgDirectory + "star.png",
+                                      scale: 3,
+                                    ),
+                                    Text("4.6", style: TextStyle(fontSize: 13)),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        ImageDirectory.imgDirectory +
+                                            "person_profile_icon.png",
+                                        scale: 3,
+                                      ),
+                                      Text("1k+", style: TextStyle(fontSize: 13)),
+                                    ],
                                   ),
-                                  Text("4.6", style: TextStyle(fontSize: 13)),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    ImageDirectory.imgDirectory +
-                                        "person_profile_icon.png",
-                                    scale: 3,
-                                  ),
-                                  Text("1k+", style: TextStyle(fontSize: 13)),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -267,13 +288,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+
     );
   }
 
   goToNextScreenWithStack(BuildContext context, dynamic route) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => route));
 
-    Navigator.pushNamed(context, route);
   }
 
   Widget searchbar() =>

@@ -53,7 +53,7 @@ class _CartState extends State<Cart> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color(0xffE5E5E5),
+        backgroundColor: MyColors.WHITE,
         body: SingleChildScrollView(
           child: Column(
             children: [
